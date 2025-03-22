@@ -86,5 +86,5 @@ if __name__ == "__main__":
         linearly_separable=False,
         batch_size=500,
         learning_rate=0.5,
-        n_epochs=1000,
+        n_epochs=2000,
     )

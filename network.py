@@ -41,6 +41,7 @@ def evaluate_network(x, w, b, Wt, bt):
     
     y, a_y = evaluate_neuron(h,w,b)
 
+
     return y, a_y, h, a_h
 
 
@@ -98,7 +99,19 @@ def update_weights(x, t, w, b, Wt, bt, lr):
     assert Wt.shape == (2, 2)
     assert bt.shape == (2,)
 
+    y, a_y, h, a_h = evaluate_network(x,w,b,Wt,bt)
     
+    gw = 1/x.shape[0] * np.dot((y-t) * derivative_of_sigmoid(a_y),h)
+    gb = 1/x.shape[0] * np.dot((y-t), derivative_of_sigmoid(a_y))
+
+    # 1/x.shape[0] * np.dot((y-t) * derivative_of_sigmoid(a_y),w*derivative_of_sigmoid(a_h)*x)
+    d_Wt = (x.T @ ((((t - y) * y * (1 - y))[:, None]) * w[None, :] * h * (1 - h))) / x.shape[0]
+    gwb = 1/x.shape[0] * np.dot((y-t) * derivative_of_sigmoid(a_y), w*derivative_of_sigmoid(a_h))
+
+    w_new = w - lr * gw
+    b_new = b - lr * gb
+    Wt_new = Wt + lr * d_Wt
+    bt_new = bt -lr * gwb
 
     return w_new, b_new, Wt_new, bt_new
 
@@ -128,8 +141,10 @@ def evaluate_prediction(x, t, w, b, Wt, bt):
     assert Wt.shape == (2, 2)
     assert bt.shape == (2,)
 
-    # TODO: add your code here
-
+    y, _,_,_ = evaluate_network(x,w,b,Wt,bt)
+    prediction = (y >= 0.5).astype(bool)
+    accuracy = np.mean(prediction == t)
+    
     return prediction, accuracy
 
 
@@ -218,8 +233,8 @@ if __name__ == "__main__":
     w_new, b_new, Wt_new, bt_new = update_weights(x, t, w, b, Wt, bt, lr)
     assert np.all(np.abs(w_new_target - w_new) < 10e-15)
     assert np.all(np.abs(b_new_target - b_new) < 10e-15)
-    assert np.all(np.abs(Wt_new_target - Wt_new) < 10e-15)
     assert np.all(np.abs(bt_new_target - bt_new) < 10e-15)
+    assert np.all(np.abs(Wt_new_target - Wt_new) < 10e-15)
 
     # test function evaluate_prediction
     prediction, accuracy = evaluate_prediction(x, t, w, b, Wt, bt)

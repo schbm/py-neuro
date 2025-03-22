@@ -76,7 +76,7 @@ if __name__ == "__main__":
 
     train_neuron(
         data_path="./data",
-        linearly_separable=False,
+        linearly_separable=True,
         batch_size=100,
         learning_rate=100,
         n_epochs=100,
